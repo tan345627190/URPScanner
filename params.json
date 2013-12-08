@@ -1,0 +1,1 @@
+{"name":"URPScanner","tagline":"模拟登录河北科技大学教务系统,并抓取需要的数据.","body":"# URPScanner# \r\n#使用方法#\r\n1. 运行URPScanner.jar输入学号和密码.\r\n2. 下面的框中即显示出了当前学期的成绩.\r\n#源码说明#\r\n* 在URPScanner这个类里面是核心的模拟登录算法和数据抽取算法.  \r\n","google":"","note":"Don't delete this file! It's used internally to help with page regeneration."}
