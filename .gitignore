@@ -6,3 +6,4 @@
 *.ear
 /bin/com
 #!bin/URPScanner.jar
+/bin

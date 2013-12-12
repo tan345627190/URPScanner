@@ -74,9 +74,11 @@ public class Main {
 		});
 		
 		textField = new JTextField();
+		textField.setText("120702205");
 		textField.setColumns(10);
 		
 		textField_1 = new JTextField();
+		textField_1.setText("940409");
 		textField_1.setColumns(10);
 		
 		JLabel label = new JLabel("\u5B66\u53F7");
