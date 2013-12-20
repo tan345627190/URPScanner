@@ -9,9 +9,14 @@ import javax.swing.JButton;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
 import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.io.FileUtils;
+
+import com.google.gson.Gson;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -24,12 +29,31 @@ import javax.swing.JTable;
 import javax.swing.JProgressBar;
 import java.awt.Font;
 import javax.swing.table.DefaultTableModel;
-
+class Userinfo{
+	public Userinfo(String username, String password) {
+		this.username = username;
+		this.password = password;
+	}
+	String username;
+	String password;
+	public String getUsername() {
+		return username;
+	}
+	public void setUsername(String username) {
+		this.username = username;
+	}
+	public String getPassword() {
+		return password;
+	}
+	public void setPassword(String password) {
+		this.password = password;
+	}
+}
 public class Main {
 
 	private JFrame frmV;
-	private JTextField textField;
-	private JPasswordField textField_1;
+	private static JTextField textField;
+	private static JPasswordField textField_1;
 	private JTable table;
 
 	/**
@@ -46,6 +70,18 @@ public class Main {
 				}
 			}
 		});
+		String json = null;
+		try {
+			json = FileUtils.readFileToString(new File("user.json"), "utf8");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Userinfo u = new Gson().fromJson(json, Userinfo.class);
+		textField.setText(u.getUsername());
+		textField_1.setText(u.getPassword());
+		
 	}
 
 	/**
@@ -60,7 +96,8 @@ public class Main {
 	 */
 	private void initialize() {
 		frmV = new JFrame();
-		frmV.setTitle("\u6210\u7EE9\u67E5\u770B\u5668 v2.0 chengf\u5B9A\u5236\u7248");
+		frmV.setResizable(false);
+		frmV.setTitle("\u6210\u7EE9\u67E5\u770B\u5668 v2.0");
 		frmV.setBounds(100, 100, 783, 484);
 		frmV.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JButton btnNewButton = new JButton("\u597D");
@@ -93,11 +130,15 @@ public class Main {
 							html = u.scan(textField.getText(), textField_1.getText());
 							progressBar.setValue(30);
 						} catch (HttpException e) {
+							JOptionPane.showMessageDialog(null, "Õ¯¬Á¥ÌŒÛ");
 							e.printStackTrace();
+							return;
 						} catch (IOException e) {
+							JOptionPane.showMessageDialog(null, "IO¥ÌŒÛ");
 							e.printStackTrace();
+							return;
 						}
-						if(html.length() == 0) JOptionPane.showMessageDialog(null, "√‹¬Î¥ÌŒÛ");
+						if(html.length() == 0) {JOptionPane.showMessageDialog(null, "√‹¬Î¥ÌŒÛ");return;}
 						List<ClassPOJO> list = u.revert(html);
 						Object[][] data = new Object[list.size()][3];
 						progressBar.setValue(60);
@@ -115,6 +156,12 @@ public class Main {
 						lblNewLabel.setText(u.getName());
 						scrollPane.setViewportView(table);
 						progressBar.setValue(100);
+						try {
+							FileUtils.writeStringToFile(new File("user.json"), new Gson().toJson(new Userinfo(textField.getText(),textField_1.getText())), "utf8");
+						} catch (IOException e) {
+							JOptionPane.showMessageDialog(null, "¥Ê»Î”√ªß–≈œ¢ ±≥ˆœ÷Œ¥÷™¥ÌŒÛ"+e.getMessage());
+							e.printStackTrace();
+						}
 					}
 				});
 				t.run();
@@ -122,7 +169,6 @@ public class Main {
 		});
 		
 		textField = new JTextField();
-		textField.setText("");
 		textField.setColumns(10);
 		
 		JLabel label = new JLabel("\u5B66\u53F7");
@@ -130,9 +176,8 @@ public class Main {
 		JLabel label_1 = new JLabel("\u5BC6\u7801");
 		
 		textField_1 = new JPasswordField();
-		textField_1.setText("");//FIXME
 		
-		JLabel lblNewLabel_1 = new JLabel("https://github.com/gsh199449");
+		JLabel lblNewLabel_1 = new JLabel("https://github.com/gsh199449/URPScanner");
 		
 		GroupLayout groupLayout = new GroupLayout(frmV.getContentPane());
 		groupLayout.setHorizontalGroup(
