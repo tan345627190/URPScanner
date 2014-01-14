@@ -22,15 +22,19 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTable;
 import javax.swing.JProgressBar;
+import javax.swing.SwingUtilities;
+
 import java.awt.Font;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseAdapter;
@@ -71,6 +75,8 @@ public class Main {
 	private static JTextField textField;
 	private static JPasswordField textField_1;
 	private JTable table;
+	String html = "";
+	 int i = 0;
 
 	/**
 	 * Launch the application.
@@ -128,7 +134,6 @@ public class Main {
 			@Override
 			public void mouseMoved(MouseEvent eve) {
 				int row = table.rowAtPoint(eve.getPoint());
-				System.out.println("===============" + row);
 				table.changeSelection(row, 0, false, false);
 			}
 		});
@@ -226,54 +231,65 @@ public class Main {
 
 		JLabel lblNewLabel_1 = new JLabel(
 				"https://github.com/gsh199449/URPScanner");
-
-		final JButton button = new JButton("\u76D1\u63A7");
+		final JLabel lblNewLabel_2 = new JLabel("\u76D1\u63A7\u672A\u5F00\u542F");
+		final JButton button = new JButton("开启监控");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Thread t1 = new Thread(new Runnable() {
+				lblNewLabel_2.setText("监控已开启");
+				Runnable r = new Runnable() {
 					@Override
 					public void run() {
-						String html = "";
-						int i = 0;
-						while (true) {
-							button.setText("已启动监控");
-							URPScanner u = new URPScanner();
-							String currenthtml = "";
-							try {
-								currenthtml = u.scan(textField.getText(),
-										textField_1.getText());
-							} catch (HttpException e) {
-								e.printStackTrace();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-							if (i == 0) {
-								i++;
-								html = currenthtml;
-								continue;
-							}
-							if (!currenthtml.equals(html)) {
-								JOptionPane.showMessageDialog(null, "已出新成绩!");
-								break;
-							} else {
-								html = currenthtml;
-								System.out.println("相同");
+						Thread down = new Thread(new Runnable() {
+							@Override
+							public void run() {
+								String currenthtml = "";
+								URPScanner u = new URPScanner();
 								try {
-									Thread.sleep(10000);
-								} catch (InterruptedException e) {
+									currenthtml = u.scan(textField.getText(),textField_1.getText());
+								} catch (HttpException e) {
+									e.printStackTrace();
+								} catch (IOException e) {
 									e.printStackTrace();
 								}
+								if (i == 0) {
+									html = currenthtml;
+								}
+								i++;
+								lblNewLabel_2.setText("正在进行第"+i+"次刷新!");
+								lblNewLabel_2.repaint();
+								if (!currenthtml.equals(html)) {
+									JOptionPane.showMessageDialog(null, "已出新成绩!");
+									html = currenthtml;
+									refreshTable re = new refreshTable();
+									re.set(progressBar, textField.getText(),textField_1.getText(), table, lblNewLabel, scrollPane);
+								} else {
+									html = currenthtml;
+								}
 							}
+						});
+						try {
+							while (true) {
+								Thread.sleep(5000);
+								SwingUtilities.invokeAndWait(down);
+							}
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						} catch (InvocationTargetException e) {
+							e.printStackTrace();
 						}
+						
 					}
-				});
-				t1.run();
+				};
+				Thread t = new Thread(r,"down");
+				t.start();
 			}
 		});
+		
+		
 
 		GroupLayout groupLayout = new GroupLayout(frmV.getContentPane());
 		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.TRAILING)
+			groupLayout.createParallelGroup(Alignment.LEADING)
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(32)
 					.addComponent(label)
@@ -283,12 +299,12 @@ public class Main {
 					.addComponent(label_1)
 					.addGap(18)
 					.addComponent(textField_1, GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
 						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(18)
 							.addComponent(lblNewLabel)
 							.addGap(174))
-						.addGroup(Alignment.TRAILING, groupLayout.createSequentialGroup()
+						.addGroup(groupLayout.createSequentialGroup()
 							.addGap(65)
 							.addComponent(btnNewButton, GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
 							.addGap(48)))
@@ -306,7 +322,9 @@ public class Main {
 				.addGroup(groupLayout.createSequentialGroup()
 					.addGap(276)
 					.addComponent(lblNewLabel_1)
-					.addContainerGap(267, Short.MAX_VALUE))
+					.addGap(103)
+					.addComponent(lblNewLabel_2, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(22, Short.MAX_VALUE))
 		);
 		groupLayout.setVerticalGroup(
 			groupLayout.createParallelGroup(Alignment.LEADING)
@@ -325,11 +343,94 @@ public class Main {
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
 					.addGap(9)
-					.addComponent(lblNewLabel_1))
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNewLabel_1)
+						.addComponent(lblNewLabel_2)))
 		);
 
 		scrollPane.setViewportView(table);
 
 		frmV.getContentPane().setLayout(groupLayout);
 	}
+}
+
+class refreshTable implements Runnable{
+	JProgressBar progressBar;
+	String un;
+	String pw;
+	private JTable table;
+	private JLabel namelable;
+	private JScrollPane pane;
+	public void set(JProgressBar progressBar,String un,String pw,JTable table,JLabel namelable,JScrollPane pane){
+		this.progressBar = progressBar;
+		this.un = un;
+		this.pw = pw;
+		this.table = table;
+		this.namelable = namelable;
+		this.pane = pane;
+	}
+	@Override
+	public void run() {
+		progressBar.setMinimum(0);
+		progressBar.setMaximum(100);
+		URPScanner u = new URPScanner();
+		String html = "";
+		try {
+			html = u.scan(un ,pw);
+			progressBar.setValue(30);
+		} catch (HttpException e) {
+			JOptionPane.showMessageDialog(null, "网络错误");
+			e.printStackTrace();
+			return;
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "IO错误");
+			e.printStackTrace();
+			return;
+		}
+		if (html.length() == 0) {
+			JOptionPane.showMessageDialog(null, "密码错误");
+			return;
+		}
+		List<ClassPOJO> list = u.revert(html);
+		Object[][] data = new Object[list.size()][3];
+		progressBar.setValue(60);
+		int i = 0;
+		for (ClassPOJO p : list) {
+			data[i] = new Object[] { p.getName(),
+					p.getCredit(), p.getScore() };
+			i++;
+		}
+		progressBar.setValue(80);
+		table = new JTable(data, new Object[] { "名称", "学分",
+				"成绩" });
+		table.setCellSelectionEnabled(true);
+		table.setColumnSelectionAllowed(true);
+		table.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseMoved(MouseEvent eve) {
+				int row = table.rowAtPoint(eve.getPoint());
+				table.changeSelection(row, 0, false, false);
+				table.changeSelection(row, 0, false, true);
+				table.changeSelection(row, 1, false, true);
+				table.changeSelection(row, 3, false, true);
+			}
+		});
+		table.setFont(new Font("微软雅黑", Font.PLAIN, 15));
+		table.setFillsViewportHeight(true);
+		namelable.setText(u.getName());
+		pane.setViewportView(table);
+		progressBar.setValue(100);
+		try {
+			FileUtils
+					.writeStringToFile(new File("user.json"),
+							new Gson().toJson(new Userinfo(
+									un,pw)),
+							"utf8");
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "存入用户信息时出现未知错误"
+					+ e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
 }
