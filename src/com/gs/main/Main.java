@@ -1,11 +1,7 @@
 package com.gs.main;
 
-import java.awt.AWTException;
 import java.awt.Desktop;
 import java.awt.EventQueue;
-import java.awt.SystemTray;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
 
 import javax.swing.JFrame;
 import javax.swing.GroupLayout;
@@ -77,6 +73,7 @@ public class Main {
 	private JTable table;
 	String html = "";
 	int i = 0;
+	boolean stop = true;
 
 	/**
 	 * Launch the application.
@@ -238,7 +235,8 @@ public class Main {
 					Desktop desktop = Desktop.getDesktop();
 					if (Desktop.isDesktopSupported()
 							&& desktop.isSupported(Desktop.Action.BROWSE)) {
-						URI uri = new URI("http://gsh199449.github.io/URPScanner/");
+						URI uri = new URI(
+								"http://gsh199449.github.io/URPScanner/");
 						desktop.browse(uri);
 					}
 				} catch (IOException ex) {
@@ -254,6 +252,7 @@ public class Main {
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				lblNewLabel_2.setText("¼à¿ØÒÑ¿ªÆô");
+				button.setText("Í£Ö¹¼à¿Ø");
 				Runnable r = new Runnable() {
 					@Override
 					public void run() {
@@ -290,10 +289,17 @@ public class Main {
 							}
 						});
 						try {
-							while (true) {
-								Thread.sleep(5000);
+							button.addActionListener(new ActionListener() {
+								public void actionPerformed(ActionEvent arg0) {
+									stop = false;
+									lblNewLabel_2.setText("ÒÑÍ£Ö¹Ë¢ÐÂ");
+								}
+							});
+							while (true && stop) {
+								Thread.sleep(1000);
 								SwingUtilities.invokeAndWait(down);
 							}
+							lblNewLabel_2.setText("ÒÑÍ£Ö¹Ë¢ÐÂ");
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						} catch (InvocationTargetException e) {
@@ -308,130 +314,67 @@ public class Main {
 		});
 
 		GroupLayout groupLayout = new GroupLayout(frmV.getContentPane());
-		groupLayout
-				.setHorizontalGroup(groupLayout
-						.createParallelGroup(Alignment.LEADING)
-						.addGroup(
-								groupLayout
-										.createSequentialGroup()
-										.addGap(32)
-										.addComponent(label)
-										.addGap(27)
-										.addComponent(textField,
-												GroupLayout.DEFAULT_SIZE, 142,
-												Short.MAX_VALUE)
-										.addGap(55)
-										.addComponent(label_1)
-										.addGap(18)
-										.addComponent(textField_1,
-												GroupLayout.DEFAULT_SIZE, 140,
-												Short.MAX_VALUE)
-										.addGroup(
-												groupLayout
-														.createParallelGroup(
-																Alignment.TRAILING)
-														.addGroup(
-																groupLayout
-																		.createSequentialGroup()
-																		.addGap(18)
-																		.addComponent(
-																				lblNewLabel)
-																		.addGap(174))
-														.addGroup(
-																groupLayout
-																		.createSequentialGroup()
-																		.addGap(65)
-																		.addComponent(
-																				btnNewButton,
-																				GroupLayout.DEFAULT_SIZE,
-																				79,
-																				Short.MAX_VALUE)
-																		.addGap(48)))
-										.addPreferredGap(
-												ComponentPlacement.RELATED)
-										.addComponent(button,
-												GroupLayout.PREFERRED_SIZE, 89,
-												GroupLayout.PREFERRED_SIZE)
-										.addGap(34))
-						.addGroup(
-								groupLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addComponent(progressBar,
-												GroupLayout.DEFAULT_SIZE, 757,
-												Short.MAX_VALUE)
-										.addContainerGap())
-						.addGroup(
-								groupLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addComponent(scrollPane,
-												GroupLayout.DEFAULT_SIZE, 757,
-												Short.MAX_VALUE)
-										.addContainerGap())
-						.addGroup(
-								groupLayout
-										.createSequentialGroup()
-										.addGap(276)
-										.addComponent(lblNewLabel_1)
-										.addGap(103)
-										.addComponent(lblNewLabel_2,
-												GroupLayout.PREFERRED_SIZE,
-												142, GroupLayout.PREFERRED_SIZE)
-										.addContainerGap(22, Short.MAX_VALUE)));
-		groupLayout
-				.setVerticalGroup(groupLayout
-						.createParallelGroup(Alignment.LEADING)
-						.addGroup(
-								groupLayout
-										.createSequentialGroup()
-										.addContainerGap()
-										.addGroup(
-												groupLayout
-														.createParallelGroup(
-																Alignment.BASELINE)
-														.addComponent(label_1)
-														.addComponent(
-																textField,
-																GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(label)
-														.addComponent(
-																textField_1,
-																GroupLayout.PREFERRED_SIZE,
-																GroupLayout.DEFAULT_SIZE,
-																GroupLayout.PREFERRED_SIZE)
-														.addComponent(
-																lblNewLabel)
-														.addComponent(
-																btnNewButton)
-														.addComponent(button))
-										.addPreferredGap(
-												ComponentPlacement.RELATED)
-										.addComponent(progressBar,
-												GroupLayout.PREFERRED_SIZE,
-												GroupLayout.DEFAULT_SIZE,
-												GroupLayout.PREFERRED_SIZE)
-										.addPreferredGap(
-												ComponentPlacement.RELATED)
-										.addComponent(scrollPane,
-												GroupLayout.DEFAULT_SIZE, 373,
-												Short.MAX_VALUE)
-										.addGap(9)
-										.addGroup(
-												groupLayout
-														.createParallelGroup(
-																Alignment.BASELINE)
-														.addComponent(
-																lblNewLabel_1)
-														.addComponent(
-																lblNewLabel_2))));
+		groupLayout.setHorizontalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(32)
+					.addComponent(label)
+					.addGap(27)
+					.addComponent(textField, GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
+					.addGap(55)
+					.addComponent(label_1)
+					.addGap(18)
+					.addComponent(textField_1, GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+					.addGap(18)
+					.addGroup(groupLayout.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblNewLabel)
+						.addGroup(groupLayout.createSequentialGroup()
+							.addComponent(btnNewButton, GroupLayout.PREFERRED_SIZE, 83, GroupLayout.PREFERRED_SIZE)
+							.addGap(18)
+							.addComponent(button, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)))
+					.addGap(107))
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(progressBar, GroupLayout.DEFAULT_SIZE, 757, Short.MAX_VALUE)
+					.addContainerGap())
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 757, Short.MAX_VALUE)
+					.addContainerGap())
+				.addGroup(groupLayout.createSequentialGroup()
+					.addGap(276)
+					.addComponent(lblNewLabel_1)
+					.addGap(103)
+					.addComponent(lblNewLabel_2, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
+					.addContainerGap(22, Short.MAX_VALUE))
+		);
+		groupLayout.setVerticalGroup(
+			groupLayout.createParallelGroup(Alignment.LEADING)
+				.addGroup(groupLayout.createSequentialGroup()
+					.addContainerGap()
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(label_1)
+						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(label)
+						.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+						.addComponent(lblNewLabel)
+						.addComponent(btnNewButton)
+						.addComponent(button))
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+					.addPreferredGap(ComponentPlacement.RELATED)
+					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
+					.addGap(9)
+					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblNewLabel_1)
+						.addComponent(lblNewLabel_2)))
+		);
 
 		scrollPane.setViewportView(table);
 
 		frmV.getContentPane().setLayout(groupLayout);
 	}
+
 }
 
 class refreshTable implements Runnable {
