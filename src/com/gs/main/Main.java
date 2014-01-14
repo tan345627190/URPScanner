@@ -1,6 +1,7 @@
 package com.gs.main;
 
 import java.awt.AWTException;
+import java.awt.Desktop;
 import java.awt.EventQueue;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
@@ -23,11 +24,12 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JPasswordField;
@@ -37,11 +39,9 @@ import javax.swing.SwingUtilities;
 
 import java.awt.Font;
 import javax.swing.table.DefaultTableModel;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.MouseAdapter;
 
 class Userinfo {
 	public Userinfo(String username, String password) {
@@ -76,7 +76,7 @@ public class Main {
 	private static JPasswordField textField_1;
 	private JTable table;
 	String html = "";
-	 int i = 0;
+	int i = 0;
 
 	/**
 	 * Launch the application.
@@ -127,6 +127,7 @@ public class Main {
 		frmV.setBounds(100, 100, 783, 484);
 		frmV.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JButton btnNewButton = new JButton("\u597D");
+		frmV.getRootPane().setDefaultButton(btnNewButton);
 		final JScrollPane scrollPane = new JScrollPane();
 		final JProgressBar progressBar = new JProgressBar();
 		table = new JTable(new Object[1][3], new Object[] { "名称", "学分", "成绩" });
@@ -219,7 +220,6 @@ public class Main {
 
 			}
 		});
-
 		textField = new JTextField();
 		textField.setColumns(10);
 
@@ -231,7 +231,25 @@ public class Main {
 
 		JLabel lblNewLabel_1 = new JLabel(
 				"https://github.com/gsh199449/URPScanner");
-		final JLabel lblNewLabel_2 = new JLabel("\u76D1\u63A7\u672A\u5F00\u542F");
+		lblNewLabel_1.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				try {
+					Desktop desktop = Desktop.getDesktop();
+					if (Desktop.isDesktopSupported()
+							&& desktop.isSupported(Desktop.Action.BROWSE)) {
+						URI uri = new URI("http://gsh199449.github.io/URPScanner/");
+						desktop.browse(uri);
+					}
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				} catch (URISyntaxException ex) {
+					ex.printStackTrace();
+				}
+			}
+		});
+		final JLabel lblNewLabel_2 = new JLabel(
+				"\u76D1\u63A7\u672A\u5F00\u542F");
 		final JButton button = new JButton("开启监控");
 		button.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -245,7 +263,8 @@ public class Main {
 								String currenthtml = "";
 								URPScanner u = new URPScanner();
 								try {
-									currenthtml = u.scan(textField.getText(),textField_1.getText());
+									currenthtml = u.scan(textField.getText(),
+											textField_1.getText());
 								} catch (HttpException e) {
 									e.printStackTrace();
 								} catch (IOException e) {
@@ -255,13 +274,16 @@ public class Main {
 									html = currenthtml;
 								}
 								i++;
-								lblNewLabel_2.setText("正在进行第"+i+"次刷新!");
+								lblNewLabel_2.setText("正在进行第" + i + "次刷新!");
 								lblNewLabel_2.repaint();
 								if (!currenthtml.equals(html)) {
-									JOptionPane.showMessageDialog(null, "已出新成绩!");
+									JOptionPane.showMessageDialog(null,
+											"已出新成绩!");
 									html = currenthtml;
 									refreshTable re = new refreshTable();
-									re.set(progressBar, textField.getText(),textField_1.getText(), table, lblNewLabel, scrollPane);
+									re.set(progressBar, textField.getText(),
+											textField_1.getText(), table,
+											lblNewLabel, scrollPane);
 								} else {
 									html = currenthtml;
 								}
@@ -277,76 +299,134 @@ public class Main {
 						} catch (InvocationTargetException e) {
 							e.printStackTrace();
 						}
-						
+
 					}
 				};
-				Thread t = new Thread(r,"down");
+				Thread t = new Thread(r, "down");
 				t.start();
 			}
 		});
-		
-		
 
 		GroupLayout groupLayout = new GroupLayout(frmV.getContentPane());
-		groupLayout.setHorizontalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(32)
-					.addComponent(label)
-					.addGap(27)
-					.addComponent(textField, GroupLayout.DEFAULT_SIZE, 142, Short.MAX_VALUE)
-					.addGap(55)
-					.addComponent(label_1)
-					.addGap(18)
-					.addComponent(textField_1, GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-					.addGroup(groupLayout.createParallelGroup(Alignment.TRAILING)
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(18)
-							.addComponent(lblNewLabel)
-							.addGap(174))
-						.addGroup(groupLayout.createSequentialGroup()
-							.addGap(65)
-							.addComponent(btnNewButton, GroupLayout.DEFAULT_SIZE, 79, Short.MAX_VALUE)
-							.addGap(48)))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(button, GroupLayout.PREFERRED_SIZE, 89, GroupLayout.PREFERRED_SIZE)
-					.addGap(34))
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(progressBar, GroupLayout.DEFAULT_SIZE, 757, Short.MAX_VALUE)
-					.addContainerGap())
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 757, Short.MAX_VALUE)
-					.addContainerGap())
-				.addGroup(groupLayout.createSequentialGroup()
-					.addGap(276)
-					.addComponent(lblNewLabel_1)
-					.addGap(103)
-					.addComponent(lblNewLabel_2, GroupLayout.PREFERRED_SIZE, 142, GroupLayout.PREFERRED_SIZE)
-					.addContainerGap(22, Short.MAX_VALUE))
-		);
-		groupLayout.setVerticalGroup(
-			groupLayout.createParallelGroup(Alignment.LEADING)
-				.addGroup(groupLayout.createSequentialGroup()
-					.addContainerGap()
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(label_1)
-						.addComponent(textField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(label)
-						.addComponent(textField_1, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-						.addComponent(lblNewLabel)
-						.addComponent(btnNewButton)
-						.addComponent(button))
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(progressBar, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE)
-					.addGap(9)
-					.addGroup(groupLayout.createParallelGroup(Alignment.BASELINE)
-						.addComponent(lblNewLabel_1)
-						.addComponent(lblNewLabel_2)))
-		);
+		groupLayout
+				.setHorizontalGroup(groupLayout
+						.createParallelGroup(Alignment.LEADING)
+						.addGroup(
+								groupLayout
+										.createSequentialGroup()
+										.addGap(32)
+										.addComponent(label)
+										.addGap(27)
+										.addComponent(textField,
+												GroupLayout.DEFAULT_SIZE, 142,
+												Short.MAX_VALUE)
+										.addGap(55)
+										.addComponent(label_1)
+										.addGap(18)
+										.addComponent(textField_1,
+												GroupLayout.DEFAULT_SIZE, 140,
+												Short.MAX_VALUE)
+										.addGroup(
+												groupLayout
+														.createParallelGroup(
+																Alignment.TRAILING)
+														.addGroup(
+																groupLayout
+																		.createSequentialGroup()
+																		.addGap(18)
+																		.addComponent(
+																				lblNewLabel)
+																		.addGap(174))
+														.addGroup(
+																groupLayout
+																		.createSequentialGroup()
+																		.addGap(65)
+																		.addComponent(
+																				btnNewButton,
+																				GroupLayout.DEFAULT_SIZE,
+																				79,
+																				Short.MAX_VALUE)
+																		.addGap(48)))
+										.addPreferredGap(
+												ComponentPlacement.RELATED)
+										.addComponent(button,
+												GroupLayout.PREFERRED_SIZE, 89,
+												GroupLayout.PREFERRED_SIZE)
+										.addGap(34))
+						.addGroup(
+								groupLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.addComponent(progressBar,
+												GroupLayout.DEFAULT_SIZE, 757,
+												Short.MAX_VALUE)
+										.addContainerGap())
+						.addGroup(
+								groupLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.addComponent(scrollPane,
+												GroupLayout.DEFAULT_SIZE, 757,
+												Short.MAX_VALUE)
+										.addContainerGap())
+						.addGroup(
+								groupLayout
+										.createSequentialGroup()
+										.addGap(276)
+										.addComponent(lblNewLabel_1)
+										.addGap(103)
+										.addComponent(lblNewLabel_2,
+												GroupLayout.PREFERRED_SIZE,
+												142, GroupLayout.PREFERRED_SIZE)
+										.addContainerGap(22, Short.MAX_VALUE)));
+		groupLayout
+				.setVerticalGroup(groupLayout
+						.createParallelGroup(Alignment.LEADING)
+						.addGroup(
+								groupLayout
+										.createSequentialGroup()
+										.addContainerGap()
+										.addGroup(
+												groupLayout
+														.createParallelGroup(
+																Alignment.BASELINE)
+														.addComponent(label_1)
+														.addComponent(
+																textField,
+																GroupLayout.PREFERRED_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																GroupLayout.PREFERRED_SIZE)
+														.addComponent(label)
+														.addComponent(
+																textField_1,
+																GroupLayout.PREFERRED_SIZE,
+																GroupLayout.DEFAULT_SIZE,
+																GroupLayout.PREFERRED_SIZE)
+														.addComponent(
+																lblNewLabel)
+														.addComponent(
+																btnNewButton)
+														.addComponent(button))
+										.addPreferredGap(
+												ComponentPlacement.RELATED)
+										.addComponent(progressBar,
+												GroupLayout.PREFERRED_SIZE,
+												GroupLayout.DEFAULT_SIZE,
+												GroupLayout.PREFERRED_SIZE)
+										.addPreferredGap(
+												ComponentPlacement.RELATED)
+										.addComponent(scrollPane,
+												GroupLayout.DEFAULT_SIZE, 373,
+												Short.MAX_VALUE)
+										.addGap(9)
+										.addGroup(
+												groupLayout
+														.createParallelGroup(
+																Alignment.BASELINE)
+														.addComponent(
+																lblNewLabel_1)
+														.addComponent(
+																lblNewLabel_2))));
 
 		scrollPane.setViewportView(table);
 
@@ -354,14 +434,16 @@ public class Main {
 	}
 }
 
-class refreshTable implements Runnable{
+class refreshTable implements Runnable {
 	JProgressBar progressBar;
 	String un;
 	String pw;
 	private JTable table;
 	private JLabel namelable;
 	private JScrollPane pane;
-	public void set(JProgressBar progressBar,String un,String pw,JTable table,JLabel namelable,JScrollPane pane){
+
+	public void set(JProgressBar progressBar, String un, String pw,
+			JTable table, JLabel namelable, JScrollPane pane) {
 		this.progressBar = progressBar;
 		this.un = un;
 		this.pw = pw;
@@ -369,6 +451,7 @@ class refreshTable implements Runnable{
 		this.namelable = namelable;
 		this.pane = pane;
 	}
+
 	@Override
 	public void run() {
 		progressBar.setMinimum(0);
@@ -376,7 +459,7 @@ class refreshTable implements Runnable{
 		URPScanner u = new URPScanner();
 		String html = "";
 		try {
-			html = u.scan(un ,pw);
+			html = u.scan(un, pw);
 			progressBar.setValue(30);
 		} catch (HttpException e) {
 			JOptionPane.showMessageDialog(null, "网络错误");
@@ -396,13 +479,11 @@ class refreshTable implements Runnable{
 		progressBar.setValue(60);
 		int i = 0;
 		for (ClassPOJO p : list) {
-			data[i] = new Object[] { p.getName(),
-					p.getCredit(), p.getScore() };
+			data[i] = new Object[] { p.getName(), p.getCredit(), p.getScore() };
 			i++;
 		}
 		progressBar.setValue(80);
-		table = new JTable(data, new Object[] { "名称", "学分",
-				"成绩" });
+		table = new JTable(data, new Object[] { "名称", "学分", "成绩" });
 		table.setCellSelectionEnabled(true);
 		table.setColumnSelectionAllowed(true);
 		table.addMouseMotionListener(new MouseMotionAdapter() {
@@ -421,16 +502,13 @@ class refreshTable implements Runnable{
 		pane.setViewportView(table);
 		progressBar.setValue(100);
 		try {
-			FileUtils
-					.writeStringToFile(new File("user.json"),
-							new Gson().toJson(new Userinfo(
-									un,pw)),
-							"utf8");
+			FileUtils.writeStringToFile(new File("user.json"),
+					new Gson().toJson(new Userinfo(un, pw)), "utf8");
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(null, "存入用户信息时出现未知错误"
-					+ e.getMessage());
+			JOptionPane.showMessageDialog(null,
+					"存入用户信息时出现未知错误" + e.getMessage());
 			e.printStackTrace();
 		}
 	}
-	
+
 }
