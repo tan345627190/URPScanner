@@ -296,7 +296,7 @@ public class Main {
 								}
 							});
 							while (true && stop) {
-								Thread.sleep(1000);
+								Thread.sleep(5000);
 								SwingUtilities.invokeAndWait(down);
 							}
 							lblNewLabel_2.setText("ÒÑÍ£Ö¹Ë¢ÐÂ");
