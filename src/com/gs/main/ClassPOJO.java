@@ -2,7 +2,7 @@ package com.gs.main;
 
 public class ClassPOJO {
 	private String name;
-	private int score;
+	private String score;
 	private float credit;
 	public String getName() {
 		return name;
@@ -10,10 +10,10 @@ public class ClassPOJO {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public int getScore() {
+	public String getScore() {
 		return score;
 	}
-	public void setScore(int score) {
+	public void setScore(String score) {
 		this.score = score;
 	}
 	public float getCredit() {

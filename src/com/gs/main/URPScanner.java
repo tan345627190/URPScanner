@@ -87,7 +87,7 @@ public class URPScanner {
 			mt.find();
 			re = mt.group(1);
 			try {
-				p.setScore(Integer.valueOf(re.equals("") ? "0" : re));
+				p.setScore(re);
 			} catch (NumberFormatException e) {
 				continue;
 			}
