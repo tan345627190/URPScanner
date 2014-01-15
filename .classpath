@@ -12,6 +12,7 @@
 			<attribute name="javadoc_location" value="jar:file:/D:/Tools/jsoup/jsoup-1.7.3-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="D:/Tools/google-gson-2.2.4/gson-2.2.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
